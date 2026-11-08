@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%278%27 fill=%27%230f1530%27/%3E%3Ctext x=%2716%27 y=%2722%27 font-size=%2716%27 text-anchor=%27middle%27 fill=%27%238be9c4%27 font-family=%27monospace%27%3Eqa%3C/text%3E%3C/svg%3E">
+<title>qa · 병렬 QA 에이전트 5개, 검증된 보고서 1장</title>
+<meta name="description" content="/qa launches five parallel QA subagents (scenario-based E2E users or data analysts) and returns one report of reproduced findings with fix proposals.">
+<style>
+  :root {
+    --bg1: #0f1530; --bg2: #1d1046; --bg3: #062a3a;
+    --glass: rgba(255,255,255,.08); --glass-solid: rgba(14,18,40,.72);
+    --line: rgba(255,255,255,.16); --text: #f3f5ff; --muted: #c3c9e6;
+    --accent: #8be9c4; --accent2: #b7a6ff; --warn: #ffd27a;
+    --radius: 18px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; color: var(--text); line-height: 1.6;
+    font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg1); min-height: 100vh;
+    word-break: keep-all; overflow-wrap: anywhere;
+  }
+  body::before {
+    content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background:
+      radial-gradient(60rem 40rem at 10% -10%, rgba(139,233,196,.22), transparent 60%),
+      radial-gradient(50rem 36rem at 100% 10%, rgba(183,166,255,.26), transparent 60%),
+      linear-gradient(160deg, var(--bg1), var(--bg2) 55%, var(--bg3));
+  }
+  a { color: var(--accent); }
+  code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
+  header.top { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); background: rgba(12,14,34,.55); border-bottom: 1px solid var(--line); }
+  header.top .wrap { display: flex; align-items: center; justify-content: space-between; height: 58px; }
+  .brand { font-weight: 800; letter-spacing: .02em; color: var(--text); text-decoration: none; }
+  .brand span { color: var(--accent); }
+  nav.links { display: flex; gap: 18px; align-items: center; }
+  nav.links a { color: var(--muted); text-decoration: none; font-size: .94rem; }
+  nav.links a:hover, nav.links a:focus-visible { color: var(--text); }
+  .lang { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
+  .lang button { background: transparent; color: var(--muted); border: 0; padding: 6px 12px; font: inherit; font-size: .85rem; cursor: pointer; }
+  .lang button[aria-pressed="true"] { background: var(--accent); color: #062a22; font-weight: 700; }
+  .lang button:focus-visible { outline: 2px solid var(--accent2); outline-offset: -2px; }
+  .card {
+    background: var(--glass); border: 1px solid var(--line); border-radius: var(--radius);
+    backdrop-filter: blur(16px) saturate(140%); -webkit-backdrop-filter: blur(16px) saturate(140%);
+    box-shadow: 0 10px 40px rgba(0,0,0,.25); padding: 26px;
+  }
+  .card .solid { background: var(--glass-solid); border-radius: 12px; padding: 14px 16px; }
+  section { padding: 34px 0; }
+  h1 { font-size: clamp(2rem, 5vw, 3.2rem); line-height: 1.15; margin: 0 0 14px; letter-spacing: -.02em; }
+  h2 { font-size: 1.5rem; margin: 0 0 16px; }
+  h3 { font-size: 1.08rem; margin: 0 0 8px; }
+  .hero { padding-top: 64px; }
+  .hero p.lead { font-size: 1.15rem; color: var(--muted); max-width: 46rem; }
+  .pill { display: inline-block; font-size: .8rem; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); border: 1px solid rgba(139,233,196,.45); border-radius: 999px; padding: 3px 10px; margin-bottom: 16px; }
+  .cta { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 22px; }
+  .btn { display: inline-block; padding: 10px 18px; border-radius: 12px; text-decoration: none; font-weight: 700; }
+  .btn.primary { background: var(--accent); color: #062a22; }
+  .btn.ghost { border: 1px solid var(--line); color: var(--text); background: rgba(255,255,255,.04); }
+  .grid { display: grid; gap: 16px; }
+  .grid.two { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  .grid.five { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+  .slice { padding: 12px 14px; background: rgba(255,255,255,.05); border-radius: 10px; }
+  .slice .n { font-weight: 800; color: var(--accent2); font-size: .85rem; }
+  .slice p { margin: 4px 0 0; color: var(--muted); font-size: .94rem; }
+  ol.steps { counter-reset: s; list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+  ol.steps li { counter-increment: s; display: grid; grid-template-columns: 40px 1fr; gap: 12px; align-items: start; }
+  ol.steps li::before { content: counter(s); display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: rgba(183,166,255,.22); color: var(--text); font-weight: 800; }
+  ol.steps p { margin: 2px 0 0; color: var(--muted); }
+  table { width: 100%; border-collapse: collapse; font-size: .94rem; }
+  th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--accent); font-weight: 700; }
+  td code { color: #fff; white-space: nowrap; overflow-wrap: normal; }
+  .tablewrap { overflow-x: auto; }
+  pre { margin: 0; overflow-x: auto; white-space: pre; color: #eaf0ff; font-size: .92rem; }
+  .copyrow { display: flex; gap: 10px; align-items: center; }
+  .copyrow > .solid { flex: 1; min-width: 0; }
+  .copyrow pre { overflow-x: auto; }
+  .copy { background: rgba(255,255,255,.1); color: var(--text); border: 1px solid var(--line); border-radius: 10px; padding: 7px 12px; font: inherit; font-size: .85rem; cursor: pointer; }
+  .copy:focus-visible { outline: 2px solid var(--accent); }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 14px 0; }
+  .stat { text-align: center; padding: 12px; border-top: 2px solid var(--accent); }
+  .stat b { display: block; font-size: 2rem; color: var(--accent); }
+  .stat span { color: var(--muted); font-size: .88rem; }
+  ul.safe { margin: 0; padding-left: 1.2rem; }
+  ul.safe li { margin: 6px 0; }
+  .warn { color: var(--warn); }
+  footer { padding: 30px 0 50px; color: var(--muted); font-size: .9rem; }
+  @media (max-width: 640px) { nav.links a.hide-sm { display: none; } .card { padding: 18px; } }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top">/<span>qa</span></a>
+    <nav class="links" aria-label="Sections">
+      <a class="hide-sm" href="#modes" data-i18n="nav_modes">모드</a>
+      <a class="hide-sm" href="#how" data-i18n="nav_how">진행</a>
+      <a class="hide-sm" href="#install" data-i18n="nav_install">설치</a>
+      <a href="https://github.com/cskwork/qa-skill">GitHub</a>
+      <div class="lang" role="group" aria-label="Language">
+        <button type="button" data-lang="ko" aria-pressed="true">KO</button>
+        <button type="button" data-lang="en" aria-pressed="false">EN</button>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main id="top" class="wrap">
+  <section class="hero">
+    <span class="pill" data-i18n="pill">Agent skill · Claude Code</span>
+    <h1 data-i18n="h1">QA 에이전트 5개를 동시에, 검증된 보고서 1장으로</h1>
+    <p class="lead" data-i18n="lead">에이전트 하나로 앱을 시험하면 한 번에 한 경로만 걷고, 그럴듯한 첫 설명에서 멈춥니다. /qa는 일을 나눕니다. 서로 다른 영역을 맡은 서브에이전트 5개를 한꺼번에 띄우고, 찾은 문제는 보여 주기 전에 코디네이터가 직접 재현합니다.</p>
+    <div class="cta">
+      <a class="btn primary" href="#install" data-i18n="cta_install">설치하기</a>
+      <a class="btn ghost" href="https://github.com/cskwork/qa-skill/blob/main/SKILL.md" data-i18n="cta_skill">SKILL.md 읽기</a>
+    </div>
+  </section>
+
+  <section id="modes">
+    <h2 data-i18n="modes_h">두 팀, 각 다섯 명</h2>
+    <div class="grid two">
+      <div class="card">
+        <h3><code>/qa e2e</code> · <span data-i18n="e2e_h">시나리오 사용자</span></h3>
+        <p data-i18n="e2e_p">실제 브라우저에서 사용자처럼 화면을 조작합니다.</p>
+        <div class="grid five" role="list">
+          <div class="slice" role="listitem"><span class="n">1</span><p data-i18n="e1">바뀐 핵심 흐름을 처음부터 끝까지</p></div>
+          <div class="slice" role="listitem"><span class="n">2</span><p data-i18n="e2">다른 역할과 권한</p></div>
+          <div class="slice" role="listitem"><span class="n">3</span><p data-i18n="e3">경계 입력: 빈 값, 최대 길이, 연타</p></div>
+          <div class="slice" role="listitem"><span class="n">4</span><p data-i18n="e4">상태와 중단: 새로고침, 두 번째 탭, 세션 만료</p></div>
+          <div class="slice" role="listitem"><span class="n">5</span><p data-i18n="e5">같은 API를 쓰는 주변 화면 회귀</p></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3><code>/qa data</code> · <span data-i18n="data_h">데이터 분석가</span></h3>
+        <p data-i18n="data_p">최근 변경된 API와 쿼리를 실제 데이터와 맞춰 봅니다.</p>
+        <div class="grid five" role="list">
+          <div class="slice" role="listitem"><span class="n">1</span><p data-i18n="d1">API 응답과 DB 행 대조</p></div>
+          <div class="slice" role="listitem"><span class="n">2</span><p data-i18n="d2">쿼리 논리: 조인, 필터, NULL, 중복</p></div>
+          <div class="slice" role="listitem"><span class="n">3</span><p data-i18n="d3">무결성: 고아 행, 나올 수 없는 상태 조합</p></div>
+          <div class="slice" role="listitem"><span class="n">4</span><p data-i18n="d4">집계와 시간: 날짜 경계, 시간대</p></div>
+          <div class="slice" role="listitem"><span class="n">5</span><p data-i18n="d5">변경 전·후 쿼리 결과 비교</p></div>
+        </div>
+      </div>
+    </div>
+    <p data-i18n="all_p"><code>/qa all</code>은 두 팀을 한 번에 띄웁니다. 서브에이전트는 문제와 수정안만 만들고 아무것도 바꾸지 않습니다.</p>
+  </section>
+
+  <section id="how">
+    <h2 data-i18n="how_h">한 번의 실행</h2>
+    <div class="card">
+      <ol class="steps">
+        <li><div><h3 data-i18n="s1_h">근거 수집</h3><p data-i18n="s1_p">저장소 지침과 --since 이후 git diff를 읽고, 바뀐 엔드포인트·쿼리·테이블·화면을 plan.md에 적습니다.</p></div></li>
+        <li><div><h3 data-i18n="s2_h">영역 나누기</h3><p data-i18n="s2_p">바뀐 경로마다 담당 영역을 정합니다. 영역끼리 계정·데이터·브라우저 세션을 공유하지 않습니다.</p></div></li>
+        <li><div><h3 data-i18n="s3_h">동시 실행</h3><p data-i18n="s3_p">메시지 하나로 서브에이전트 N개를 병렬로 띄웁니다. 모두 같은 브리프 양식을 받고 findings-n.md를 씁니다.</p></div></li>
+        <li><div><h3 data-i18n="s4_h">재현 검증</h3><p data-i18n="s4_p">원인이 같은 항목을 합치고 하나씩 재현해 CONFIRMED 또는 UNVERIFIED로 표시합니다. 시험 데이터와 브라우저 세션을 정리합니다.</p></div></li>
+        <li><div><h3 data-i18n="s5_h">보고와 적용</h3><p data-i18n="s5_p">심각도별 개수, 증거와 수정안이 담긴 표, 못 본 범위를 보고하고, 적용할 수정을 묻습니다. 승인한 것만 하나씩 적용하고 재현을 다시 돌립니다.</p></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="options">
+    <h2 data-i18n="opt_h">옵션</h2>
+    <div class="card">
+      <div class="solid"><pre>/qa [e2e|data|all] [target] [--agents N] [--model M] [--effort E] [--since REF]</pre></div>
+      <div class="tablewrap"><table>
+        <thead><tr><th data-i18n="th_arg">인자</th><th data-i18n="th_def">기본값</th><th data-i18n="th_val">값</th></tr></thead>
+        <tbody>
+          <tr><td>mode</td><td><code>e2e</code></td><td><code>e2e</code> <code>data</code> <code>all</code></td></tr>
+          <tr><td>target</td><td data-i18n="def_target">현재 저장소와 dev 환경</td><td data-i18n="val_target">URL, 저장소 경로, 티켓 키, 기능 이름</td></tr>
+          <tr><td><code>--agents N</code></td><td><code>5</code></td><td data-i18n="val_agents">모드당 1-10</td></tr>
+          <tr><td><code>--model M</code></td><td><code>sonnet</code> (Sonnet 5.5)</td><td data-i18n="val_model">sonnet, opus, haiku, fable 또는 전체 모델 id</td></tr>
+          <tr><td><code>--effort E</code></td><td><code>medium</code></td><td><code>low</code> <code>medium</code> <code>high</code> <code>xhigh</code> <code>max</code></td></tr>
+          <tr><td><code>--since REF</code></td><td data-i18n="def_since">기본 브랜치와의 merge-base</td><td data-i18n="val_since">git ref 또는 날짜</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <section id="safety">
+    <h2 data-i18n="safe_h">안전 장치</h2>
+    <div class="card">
+      <ul class="safe">
+        <li data-i18n="safe1">운영 환경은 범위 밖입니다. 첫 쿼리 전에 DB 호스트를 확인합니다.</li>
+        <li data-i18n="safe2">서브에이전트는 읽기 쿼리만 쓰고, 저장소를 건드리지 않고, 외부에 아무것도 게시하지 않습니다.</li>
+        <li data-i18n="safe3">시험 데이터에는 QA-실행ID-번호 태그를 붙여 정리 목록에 남기고, 비밀값은 *** 로 적습니다.</li>
+        <li class="warn" data-i18n="safe4">코드 수정과 데이터 쓰기는 사용자가 승인한 것만 적용합니다.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="smoke">
+    <h2 data-i18n="smoke_h">시험 실행</h2>
+    <div class="card">
+      <p data-i18n="smoke_p">로그인과 CRUD가 있는 작은 데모 사이트에서 Sonnet 5.5 medium 에이전트 5개를 돌렸습니다(2026-11-09, 에이전트당 1.5-2.5분).</p>
+      <div class="stats">
+        <div class="stat"><b>34</b><span data-i18n="st_raw">원래 보고 건수</span></div>
+        <div class="stat"><b>18</b><span data-i18n="st_merged">원인별로 합친 건수</span></div>
+        <div class="stat"><b>17</b><span data-i18n="st_conf">코디네이터가 재현</span></div>
+        <div class="stat"><b>1</b><span data-i18n="st_block">blocker</span></div>
+      </div>
+      <p data-i18n="smoke_block">blocker는 세션 검사가 고정된 세션 문자열이 들어 있기만 하면 어떤 쿠키든 통과시킨 문제였습니다. 위조한 쿠키로 로그인 없이 API를 읽을 수 있었습니다.</p>
+      <p data-i18n="smoke_lessons">이 실행에서 얻은 교훈 세 가지가 스킬에 들어 있습니다: 에이전트마다 이름 붙은 브라우저 세션 하나, 부하 데이터는 측정 직후 삭제, 담당 밖 문제는 한 줄만 적기.</p>
+    </div>
+  </section>
+
+  <section id="install">
+    <h2 data-i18n="inst_h">설치</h2>
+    <div class="card">
+      <div class="copyrow"><div class="solid"><pre id="cmd1">npx skills@latest add cskwork/qa-skill</pre></div><button class="copy" type="button" data-copy="cmd1" data-i18n="copy">복사</button></div>
+      <p data-i18n="inst_or">또는</p>
+      <div class="copyrow"><div class="solid"><pre id="cmd2">git clone https://github.com/cskwork/qa-skill ~/.claude/skills/qa</pre></div><button class="copy" type="button" data-copy="cmd2" data-i18n="copy">복사</button></div>
+      <p data-i18n="inst_req">필요한 것: 병렬 서브에이전트를 띄울 수 있는 호스트(Claude Code의 Agent 도구), e2e용 playwright-cli, curl, data용 읽기 전용 DB 클라이언트.</p>
+      <p data-i18n="inst_user">사용자가 직접 /qa를 입력해야 실행됩니다. 에이전트가 스스로 시작하지 않습니다.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><span data-i18n="foot">MIT 라이선스 · 스킬 모음</span> <a href="https://github.com/cskwork/skills">cskwork/skills</a> · <a href="https://github.com/cskwork/qa-skill">cskwork/qa-skill</a></p>
+  </div>
+</footer>
+
+<script>
+const I18N = {
+  ko: {
+    _title: "qa · 병렬 QA 에이전트 5개, 검증된 보고서 1장",
+    nav_modes: "모드", nav_how: "진행", nav_install: "설치",
+    pill: "Agent skill · Claude Code",
+    h1: "QA 에이전트 5개를 동시에, 검증된 보고서 1장으로",
+    lead: "에이전트 하나로 앱을 시험하면 한 번에 한 경로만 걷고, 그럴듯한 첫 설명에서 멈춥니다. /qa는 일을 나눕니다. 서로 다른 영역을 맡은 서브에이전트 5개를 한꺼번에 띄우고, 찾은 문제는 보여 주기 전에 코디네이터가 직접 재현합니다.",
+    cta_install: "설치하기", cta_skill: "SKILL.md 읽기",
+    modes_h: "두 팀, 각 다섯 명",
+    e2e_h: "시나리오 사용자", e2e_p: "실제 브라우저에서 사용자처럼 화면을 조작합니다.",
+    e1: "바뀐 핵심 흐름을 처음부터 끝까지", e2: "다른 역할과 권한", e3: "경계 입력: 빈 값, 최대 길이, 연타", e4: "상태와 중단: 새로고침, 두 번째 탭, 세션 만료", e5: "같은 API를 쓰는 주변 화면 회귀",
+    data_h: "데이터 분석가", data_p: "최근 변경된 API와 쿼리를 실제 데이터와 맞춰 봅니다.",
+    d1: "API 응답과 DB 행 대조", d2: "쿼리 논리: 조인, 필터, NULL, 중복", d3: "무결성: 고아 행, 나올 수 없는 상태 조합", d4: "집계와 시간: 날짜 경계, 시간대", d5: "변경 전·후 쿼리 결과 비교",
+    all_p: "<code>/qa all</code>은 두 팀을 한 번에 띄웁니다. 서브에이전트는 문제와 수정안만 만들고 아무것도 바꾸지 않습니다.",
+    how_h: "한 번의 실행",
+    s1_h: "근거 수집", s1_p: "저장소 지침과 --since 이후 git diff를 읽고, 바뀐 엔드포인트·쿼리·테이블·화면을 plan.md에 적습니다.",
+    s2_h: "영역 나누기", s2_p: "바뀐 경로마다 담당 영역을 정합니다. 영역끼리 계정·데이터·브라우저 세션을 공유하지 않습니다.",
+    s3_h: "동시 실행", s3_p: "메시지 하나로 서브에이전트 N개를 병렬로 띄웁니다. 모두 같은 브리프 양식을 받고 findings-n.md를 씁니다.",
+    s4_h: "재현 검증", s4_p: "원인이 같은 항목을 합치고 하나씩 재현해 CONFIRMED 또는 UNVERIFIED로 표시합니다. 시험 데이터와 브라우저 세션을 정리합니다.",
+    s5_h: "보고와 적용", s5_p: "심각도별 개수, 증거와 수정안이 담긴 표, 못 본 범위를 보고하고, 적용할 수정을 묻습니다. 승인한 것만 하나씩 적용하고 재현을 다시 돌립니다.",
+    opt_h: "옵션", th_arg: "인자", th_def: "기본값", th_val: "값",
+    def_target: "현재 저장소와 dev 환경", val_target: "URL, 저장소 경로, 티켓 키, 기능 이름",
+    val_agents: "모드당 1-10", val_model: "sonnet, opus, haiku, fable 또는 전체 모델 id",
+    def_since: "기본 브랜치와의 merge-base", val_since: "git ref 또는 날짜",
+    safe_h: "안전 장치",
+    safe1: "운영 환경은 범위 밖입니다. 첫 쿼리 전에 DB 호스트를 확인합니다.",
+    safe2: "서브에이전트는 읽기 쿼리만 쓰고, 저장소를 건드리지 않고, 외부에 아무것도 게시하지 않습니다.",
+    safe3: "시험 데이터에는 QA-실행ID-번호 태그를 붙여 정리 목록에 남기고, 비밀값은 *** 로 적습니다.",
+    safe4: "코드 수정과 데이터 쓰기는 사용자가 승인한 것만 적용합니다.",
+    smoke_h: "시험 실행",
+    smoke_p: "로그인과 CRUD가 있는 작은 데모 사이트에서 Sonnet 5.5 medium 에이전트 5개를 돌렸습니다(2026-11-09, 에이전트당 1.5-2.5분).",
+    st_raw: "원래 보고 건수", st_merged: "원인별로 합친 건수", st_conf: "코디네이터가 재현", st_block: "blocker",
+    smoke_block: "blocker는 세션 검사가 고정된 세션 문자열이 들어 있기만 하면 어떤 쿠키든 통과시킨 문제였습니다. 위조한 쿠키로 로그인 없이 API를 읽을 수 있었습니다.",
+    smoke_lessons: "이 실행에서 얻은 교훈 세 가지가 스킬에 들어 있습니다: 에이전트마다 이름 붙은 브라우저 세션 하나, 부하 데이터는 측정 직후 삭제, 담당 밖 문제는 한 줄만 적기.",
+    inst_h: "설치", inst_or: "또는", copy: "복사", copied: "복사됨",
+    inst_req: "필요한 것: 병렬 서브에이전트를 띄울 수 있는 호스트(Claude Code의 Agent 도구), e2e용 playwright-cli, curl, data용 읽기 전용 DB 클라이언트.",
+    inst_user: "사용자가 직접 /qa를 입력해야 실행됩니다. 에이전트가 스스로 시작하지 않습니다.",
+    foot: "MIT 라이선스 · 스킬 모음"
+  },
+  en: {
+    _title: "qa · five parallel QA agents, one verified report",
+    nav_modes: "Modes", nav_how: "How", nav_install: "Install",
+    pill: "Agent skill · Claude Code",
+    h1: "Five QA agents at once, one verified report",
+    lead: "One agent testing an app walks one path at a time and stops at the first plausible story. /qa splits the work: it launches five subagents at once, each owning a different slice of the app, and the coordinator reproduces every finding before you see it.",
+    cta_install: "Install", cta_skill: "Read SKILL.md",
+    modes_h: "Two teams of five",
+    e2e_h: "Scenario users", e2e_p: "Drive the real app in a browser, like users do.",
+    e1: "The main changed journey, end to end", e2: "Other roles and permissions", e3: "Edge input: empty, max length, double submit", e4: "State and interruption: reload, second tab, session expiry", e5: "Regression on neighbours that share the changed APIs",
+    data_h: "Data analysts", data_p: "Check the recently changed APIs and queries against real data.",
+    d1: "API response vs DB rows", d2: "Query logic: joins, filters, NULLs, duplicates", d3: "Integrity: orphans, impossible status combinations", d4: "Aggregates and time: date boundaries, time zones", d5: "Before vs after query results",
+    all_p: "<code>/qa all</code> launches both teams together. Delegates find and propose; they change nothing.",
+    how_h: "One run",
+    s1_h: "Ground", s1_p: "Read the repo instructions and the git diff since --since; list changed endpoints, queries, tables, and screens in plan.md.",
+    s2_h: "Slice", s2_p: "Every changed path maps to a slice. Slices share no accounts, data, or browser sessions.",
+    s3_h: "Launch", s3_p: "One message, N subagents in parallel. Each gets the same brief template and writes findings-n.md.",
+    s4_h: "Verify", s4_p: "Merge findings with a shared root cause, reproduce each one, mark it CONFIRMED or UNVERIFIED, and clean up test data and browser sessions.",
+    s5_h: "Report and apply", s5_p: "Severity counts, a table with evidence and fix proposals, coverage gaps, then one question: which fixes to apply. Approved fixes go in one at a time, with the repro re-run.",
+    opt_h: "Options", th_arg: "Arg", th_def: "Default", th_val: "Values",
+    def_target: "current repo and its dev environment", val_target: "URL, repo path, ticket key, feature name",
+    val_agents: "1-10 per mode", val_model: "sonnet, opus, haiku, fable, or a full model id",
+    def_since: "merge-base with the default branch", val_since: "git ref or date",
+    safe_h: "Safety",
+    safe1: "Production is out of scope; the DB host is checked before the first query.",
+    safe2: "Delegates run read-only queries, leave the repo untouched, and post nothing externally.",
+    safe3: "Test data carries a QA-runid-n tag and is listed for cleanup; secrets are written as ***.",
+    safe4: "Code fixes and data writes happen only after you approve them.",
+    smoke_h: "Smoke run",
+    smoke_p: "Five Sonnet 5.5 medium agents on a small demo site with login and CRUD (2026-11-09, 1.5-2.5 min per agent).",
+    st_raw: "raw findings", st_merged: "merged by root cause", st_conf: "reproduced by the coordinator", st_block: "blocker",
+    smoke_block: "The blocker: the session check accepted any cookie containing the fixed session string, so a forged cookie read the API without logging in.",
+    smoke_lessons: "Three lessons from that run are in the skill: one named browser session per agent, delete stress data right after measuring, and note out-of-slice issues in one line.",
+    inst_h: "Install", inst_or: "or", copy: "Copy", copied: "Copied",
+    inst_req: "Requirements: a host with parallel subagents (Claude Code's Agent tool), playwright-cli for e2e, curl, and a read-only DB client for data.",
+    inst_user: "User-invoked: type /qa to run it. Agents do not start it on their own.",
+    foot: "MIT license · part of the skill collection"
+  }
+};
+const HTML_KEYS = new Set(["all_p"]);
+function setLang(lang) {
+  const dict = I18N[lang] || I18N.ko;
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const v = dict[el.dataset.i18n];
+    if (v === undefined) return;
+    if (HTML_KEYS.has(el.dataset.i18n)) el.innerHTML = v; else el.textContent = v;
+  });
+  document.documentElement.lang = lang;
+  document.title = dict._title;
+  document.querySelectorAll(".lang button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
+  try { localStorage.setItem("qa-skill-lang", lang); } catch (e) {}
+}
+document.querySelectorAll(".lang button").forEach(b => b.addEventListener("click", () => setLang(b.dataset.lang)));
+document.querySelectorAll(".copy").forEach(b => b.addEventListener("click", async () => {
+  const text = document.getElementById(b.dataset.copy).textContent;
+  try { await navigator.clipboard.writeText(text); } catch (e) { return; }
+  const lang = document.documentElement.lang in I18N ? document.documentElement.lang : "ko";
+  b.textContent = I18N[lang].copied;
+  setTimeout(() => { b.textContent = I18N[document.documentElement.lang in I18N ? document.documentElement.lang : "ko"].copy; }, 1500);
+}));
+let saved = "ko";
+try { saved = localStorage.getItem("qa-skill-lang") || "ko"; } catch (e) {}
+setLang(saved);
+</script>
+</body>
+</html>
