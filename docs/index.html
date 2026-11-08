@@ -125,19 +125,19 @@
     <h2 data-i18n="modes_h">두 팀, 각 다섯 명</h2>
     <div class="grid two">
       <div class="card">
-        <h3><code>/qa e2e</code> · <span data-i18n="e2e_h">시나리오 사용자</span></h3>
-        <p data-i18n="e2e_p">실제 브라우저에서 사용자처럼 화면을 조작합니다.</p>
+        <h3><code>/qa e2e</code> · <span data-i18n="e2e_h">프론트 · 실제 사용자</span></h3>
+        <p data-i18n="e2e_p">사람들이 실제로 쓰는 방식 그대로, 실수와 예상 밖 행동까지 브라우저에서 해 봅니다.</p>
         <div class="grid five" role="list">
-          <div class="slice" role="listitem"><span class="n">1</span><p data-i18n="e1">바뀐 핵심 흐름을 처음부터 끝까지</p></div>
-          <div class="slice" role="listitem"><span class="n">2</span><p data-i18n="e2">다른 역할과 권한</p></div>
-          <div class="slice" role="listitem"><span class="n">3</span><p data-i18n="e3">경계 입력: 빈 값, 최대 길이, 연타</p></div>
-          <div class="slice" role="listitem"><span class="n">4</span><p data-i18n="e4">상태와 중단: 새로고침, 두 번째 탭, 세션 만료</p></div>
-          <div class="slice" role="listitem"><span class="n">5</span><p data-i18n="e5">같은 API를 쓰는 주변 화면 회귀</p></div>
+          <div class="slice" role="listitem"><span class="n">1</span><p data-i18n="e1">처음 쓰는 사람: 사전 지식 없이 바뀐 핵심 흐름을 끝까지</p></div>
+          <div class="slice" role="listitem"><span class="n">2</span><p data-i18n="e2">실수하는 사람: 잘못된 형식, 오타, 붙여넣기, 한글 입력 중 Enter, 다른 버튼</p></div>
+          <div class="slice" role="listitem"><span class="n">3</span><p data-i18n="e3">급한 사람: 연타, 로딩 중 클릭, 빠른 이동, 느린 네트워크</p></div>
+          <div class="slice" role="listitem"><span class="n">4</span><p data-i18n="e4">중간에 끊기는 사람: 뒤로·새로고침, 탭 닫고 돌아오기, 두 번째 탭, 세션 만료</p></div>
+          <div class="slice" role="listitem"><span class="n">5</span><p data-i18n="e5">길을 벗어난 사람: 딥링크, 단계 건너뛰기, 다른 역할·모바일·키보드만</p></div>
         </div>
       </div>
       <div class="card">
-        <h3><code>/qa data</code> · <span data-i18n="data_h">데이터 분석가</span></h3>
-        <p data-i18n="data_p">최근 변경된 API와 쿼리를 실제 데이터와 맞춰 봅니다.</p>
+        <h3><code>/qa data</code> · <span data-i18n="data_h">백엔드 · API와 데이터 분석가</span></h3>
+        <p data-i18n="data_p">최근 변경된 API와 쿼리를 실제 데이터와 도메인 의도에 맞춰 봅니다.</p>
         <div class="grid five" role="list">
           <div class="slice" role="listitem"><span class="n">1</span><p data-i18n="d1">API 응답과 DB 행 대조</p></div>
           <div class="slice" role="listitem"><span class="n">2</span><p data-i18n="d2">쿼리 논리: 조인, 필터, NULL, 중복</p></div>
@@ -147,7 +147,7 @@
         </div>
       </div>
     </div>
-    <p data-i18n="intent_p">판정 기준은 도메인 의도입니다. 용어집·스키마 주석·기획서·티켓이 각 엔티티·상태·값에 준 의미를 출처와 함께 적고, 그 기준으로 맞고 틀림을 가립니다. 시험 데이터도 도메인에 맞는 실제적인 값을 씁니다. 근거가 없는 기대값은 추측하지 않고 질문으로 돌려줍니다.</p>
+    <p data-i18n="intent_p">판정 기준은 팀마다 다릅니다. 프론트는 실제 사용자의 경험입니다: 실수해도 목표에 닿거나 이유를 분명히 듣는지, 무슨 일이 일어났는지 아는지, 되돌릴 수 있는지, 입력을 잃지 않는지. 백엔드는 도메인 의도입니다: 용어집·스키마 주석·기획서·티켓이 각 엔티티·상태·값에 준 의미를 출처와 함께 적고, 근거가 없는 기대값은 추측하지 않고 질문으로 돌려줍니다. 시험 데이터는 양쪽 모두 도메인에 맞는 실제적인 값을 씁니다.</p>
     <p data-i18n="all_p"><code>/qa all</code>은 두 팀을 한 번에 띄웁니다. 서브에이전트는 문제와 수정안만 만들고 아무것도 바꾸지 않습니다.</p>
   </section>
 
@@ -171,7 +171,7 @@
       <div class="tablewrap"><table>
         <thead><tr><th data-i18n="th_arg">인자</th><th data-i18n="th_def">기본값</th><th data-i18n="th_val">값</th></tr></thead>
         <tbody>
-          <tr><td>mode</td><td><code>e2e</code></td><td><code>e2e</code> <code>data</code> <code>all</code></td></tr>
+          <tr><td>mode</td><td><code>e2e</code></td><td><code>e2e</code>/<code>frontend</code> <code>data</code>/<code>backend</code> <code>all</code></td></tr>
           <tr><td>target</td><td data-i18n="def_target">현재 저장소와 dev 환경</td><td data-i18n="val_target">URL, 저장소 경로, 티켓 키, 기능 이름</td></tr>
           <tr><td><code>--agents N</code></td><td><code>5</code></td><td data-i18n="val_agents">모드당 1-10</td></tr>
           <tr><td><code>--model M</code></td><td><code>sonnet</code> (Sonnet 5.5)</td><td data-i18n="val_model">sonnet, opus, haiku, fable 또는 전체 모델 id</td></tr>
@@ -237,11 +237,11 @@ const I18N = {
     lead: "에이전트 하나로 앱을 시험하면 한 번에 한 경로만 걷고, 그럴듯한 첫 설명에서 멈춥니다. /qa는 일을 나눕니다. 서로 다른 영역을 맡은 서브에이전트 5개를 한꺼번에 띄우고, 찾은 문제는 보여 주기 전에 코디네이터가 직접 재현합니다.",
     cta_install: "설치하기", cta_skill: "SKILL.md 읽기",
     modes_h: "두 팀, 각 다섯 명",
-    e2e_h: "시나리오 사용자", e2e_p: "실제 브라우저에서 사용자처럼 화면을 조작합니다.",
-    e1: "바뀐 핵심 흐름을 처음부터 끝까지", e2: "다른 역할과 권한", e3: "경계 입력: 빈 값, 최대 길이, 연타", e4: "상태와 중단: 새로고침, 두 번째 탭, 세션 만료", e5: "같은 API를 쓰는 주변 화면 회귀",
-    data_h: "데이터 분석가", data_p: "최근 변경된 API와 쿼리를 실제 데이터와 맞춰 봅니다.",
+    e2e_h: "프론트 · 실제 사용자", e2e_p: "사람들이 실제로 쓰는 방식 그대로, 실수와 예상 밖 행동까지 브라우저에서 해 봅니다.",
+    e1: "처음 쓰는 사람: 사전 지식 없이 바뀐 핵심 흐름을 끝까지", e2: "실수하는 사람: 잘못된 형식, 오타, 붙여넣기, 한글 입력 중 Enter, 다른 버튼", e3: "급한 사람: 연타, 로딩 중 클릭, 빠른 이동, 느린 네트워크", e4: "중간에 끊기는 사람: 뒤로·새로고침, 탭 닫고 돌아오기, 두 번째 탭, 세션 만료", e5: "길을 벗어난 사람: 딥링크, 단계 건너뛰기, 다른 역할·모바일·키보드만",
+    data_h: "백엔드 · API와 데이터 분석가", data_p: "최근 변경된 API와 쿼리를 실제 데이터와 도메인 의도에 맞춰 봅니다.",
     d1: "API 응답과 DB 행 대조", d2: "쿼리 논리: 조인, 필터, NULL, 중복", d3: "도메인 무결성: 도메인이 허용하지 않는 상태·조합·값", d4: "집계와 시간: 날짜 경계, 시간대", d5: "변경 전·후 쿼리 결과 비교",
-    intent_p: "판정 기준은 도메인 의도입니다. 용어집·스키마 주석·기획서·티켓이 각 엔티티·상태·값에 준 의미를 출처와 함께 적고, 그 기준으로 맞고 틀림을 가립니다. 시험 데이터도 도메인에 맞는 실제적인 값을 씁니다. 근거가 없는 기대값은 추측하지 않고 질문으로 돌려줍니다.",
+    intent_p: "판정 기준은 팀마다 다릅니다. 프론트는 실제 사용자의 경험입니다: 실수해도 목표에 닿거나 이유를 분명히 듣는지, 무슨 일이 일어났는지 아는지, 되돌릴 수 있는지, 입력을 잃지 않는지. 백엔드는 도메인 의도입니다: 용어집·스키마 주석·기획서·티켓이 각 엔티티·상태·값에 준 의미를 출처와 함께 적고, 근거가 없는 기대값은 추측하지 않고 질문으로 돌려줍니다. 시험 데이터는 양쪽 모두 도메인에 맞는 실제적인 값을 씁니다.",
     all_p: "<code>/qa all</code>은 두 팀을 한 번에 띄웁니다. 서브에이전트는 문제와 수정안만 만들고 아무것도 바꾸지 않습니다.",
     how_h: "한 번의 실행",
     s1_h: "근거 수집", s1_p: "저장소 지침과 --since 이후 git diff를 읽고, 바뀐 엔드포인트·쿼리·테이블·화면과 도메인 의도 표(엔티티·상태·전이·불변식·역할 규칙, 각각 출처 포함)를 plan.md에 적습니다.",
@@ -276,11 +276,11 @@ const I18N = {
     lead: "One agent testing an app walks one path at a time and stops at the first plausible story. /qa splits the work: it launches five subagents at once, each owning a different slice of the app, and the coordinator reproduces every finding before you see it.",
     cta_install: "Install", cta_skill: "Read SKILL.md",
     modes_h: "Two teams of five",
-    e2e_h: "Scenario users", e2e_p: "Drive the real app in a browser, like users do.",
-    e1: "The main changed journey, end to end", e2: "Other roles and permissions", e3: "Edge input: empty, max length, double submit", e4: "State and interruption: reload, second tab, session expiry", e5: "Regression on neighbours that share the changed APIs",
-    data_h: "Data analysts", data_p: "Check the recently changed APIs and queries against real data.",
+    e2e_h: "Frontend · real users", e2e_p: "Use the app the way people actually do, mistakes and unexpected actions included, in a real browser.",
+    e1: "First-timer: the main changed journey with no prior knowledge", e2: "Mistake maker: wrong format, typos, paste, IME Enter, the wrong button", e3: "Impatient user: double click, clicking while loading, rapid navigation, slow network", e4: "Interrupted user: back or refresh, close and return, second tab, session expiry", e5: "Off-path user: deep links, skipped steps, another role, mobile, keyboard only",
+    data_h: "Backend · API and data analysts", data_p: "Check the recently changed APIs and queries against real data and domain intent.",
     d1: "API response vs DB rows", d2: "Query logic: joins, filters, NULLs, duplicates", d3: "Domain integrity: states, combinations, and values the domain forbids", d4: "Aggregates and time: date boundaries, time zones", d5: "Before vs after query results",
-    intent_p: "The oracle is domain intent: the meaning your glossary, schema comments, specs, and tickets give each entity, state, and value, cited at the source. Test data is domain-realistic too. Where no rule is written down, the finding comes back as a question instead of a guess.",
+    intent_p: "Each team has its own oracle. Frontend: the real user's experience. With mistakes included, do they reach the goal or get told clearly why not, understand what happened, recover, and keep their work? Backend: domain intent, the meaning your glossary, schema comments, specs, and tickets give each entity, state, and value, cited at the source; with no written rule, the finding comes back as a question instead of a guess. Test data is domain-realistic on both sides.",
     all_p: "<code>/qa all</code> launches both teams together. Delegates find and propose; they change nothing.",
     how_h: "One run",
     s1_h: "Ground", s1_p: "Read the repo instructions and the git diff since --since; write the changed endpoints, queries, tables, and screens and a domain intent table (entities, states, transitions, invariants, role rules, each with its source) into plan.md.",

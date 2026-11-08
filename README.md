@@ -7,11 +7,16 @@
 
 One agent testing an app walks one path at a time and stops at the first plausible story. `/qa` splits the work: it launches **five subagents at once**, each owning a different slice of the app, then **reproduces every finding itself** before you see it.
 
-- **`/qa e2e`**: five scenario-based users drive the real app in a browser: the main changed journey, other roles and permissions, edge input, state and interruptions, and regression neighbours.
-- **`/qa data`**: five data analysts check the recent changes against real data: API response vs DB rows, query logic, domain integrity, aggregates and time boundaries, and before-vs-after query results.
+- **`/qa e2e`** (frontend): five real users drive the app in a browser the way people actually do: a first-timer, a mistake maker, an impatient user, an interrupted user, and an off-path user (deep links, skipped steps, mobile, keyboard only).
+- **`/qa data`** (backend): five analysts check the recent API and query changes against real data: API response vs DB rows, query logic, domain integrity, aggregates and time boundaries, and before-vs-after query results.
 - **`/qa all`**: both teams in one launch.
 
-Every check is judged against **domain intent**: the meaning your glossary, schema comments, specs, and tickets give each entity, state, and value, cited at the source. The code under test is never its own oracle. Test data is domain-realistic too (real roles, plausible values, the edge states the domain names). Where no rule is written down, the finding comes back as a question instead of a guess.
+Each side has its own oracle, and the code under test is never one:
+
+- **Frontend: the real user's experience.** With mistakes and unexpected actions included, does the user reach the goal or get told clearly why not, understand what happened, recover, and keep their work?
+- **Backend: domain intent.** The meaning your glossary, schema comments, specs, and tickets give each entity, state, and value, cited at the source. Where no rule is written down, the finding comes back as a question instead of a guess.
+
+Test data is domain-realistic on both sides: real roles, plausible values, and the edge states the domain names.
 
 Delegates **find and propose**; they change nothing. You approve fixes from the report, and the coordinator applies them one at a time and re-runs the repro.
 
@@ -23,7 +28,7 @@ Delegates **find and propose**; they change nothing. You approve fixes from the 
 
 | Arg | Default | Values |
 |---|---|---|
-| mode | `e2e` | `e2e`, `data`, `all` |
+| mode | `e2e` | `e2e` (`frontend`), `data` (`backend`), `all` |
 | target | current repo and its dev environment | URL, repo path, ticket key, feature name |
 | `--agents N` | `5` | 1-10 per mode |
 | `--model M` | `sonnet` (Sonnet 5.5) | `sonnet` `opus` `haiku` `fable` or a full model id; non-Claude ids in `data` mode via a peer CLI |
@@ -80,7 +85,7 @@ Also part of the skill collection [cskwork/skills](https://github.com/cskwork/sk
 
 ## 한국어 요약
 
-`/qa`는 QA 서브에이전트 5개를 동시에 띄우고, 찾은 문제를 직접 재현해 확인한 뒤 보고서 하나로 돌려주는 스킬입니다. `e2e`는 실제 사용자 시나리오로 화면을 조작해 버그를 찾고, `data`는 최근 변경(API·쿼리)을 실제 데이터와 맞춰 봅니다. 맞고 틀림은 코드가 아니라 도메인 의도(용어집·스키마 주석·기획서·티켓에 적힌 의미)를 출처와 함께 기준으로 삼고, 근거가 없으면 추측하지 않고 질문으로 돌려줍니다. 기본 모델은 Sonnet 5.5 medium이고 `--model`, `--effort`로 바꿉니다. 서브에이전트는 문제와 수정안만 만들고, 실제 수정은 사용자가 승인한 것만 하나씩 적용합니다. 운영 DB는 쓰지 않습니다.
+`/qa`는 QA 서브에이전트 5개를 동시에 띄우고, 찾은 문제를 직접 재현해 확인한 뒤 보고서 하나로 돌려주는 스킬입니다. 프론트(`e2e`)는 실제 사용자가 쓰는 방식 그대로, 실수와 예상 밖 행동까지 포함해 화면을 조작하고 "목표에 닿는가, 무슨 일이 일어났는지 아는가, 되돌릴 수 있는가, 입력을 잃지 않는가"로 판정합니다. 백엔드(`data`)는 최근 변경된 API·쿼리를 실제 데이터와 맞춰 보고, 맞고 틀림은 코드가 아니라 도메인 의도(용어집·스키마 주석·기획서·티켓에 적힌 의미)를 출처와 함께 기준으로 삼으며, 근거가 없으면 추측하지 않고 질문으로 돌려줍니다. 기본 모델은 Sonnet 5.5 medium이고 `--model`, `--effort`로 바꿉니다. 서브에이전트는 문제와 수정안만 만들고, 실제 수정은 사용자가 승인한 것만 하나씩 적용합니다. 운영 DB는 쓰지 않습니다.
 
 ## License
 
