@@ -148,7 +148,7 @@
       </div>
     </div>
     <p data-i18n="intent_p">판정 기준은 팀마다 다릅니다. 프론트는 실제 사용자의 경험입니다: 실수해도 목표에 닿거나 이유를 분명히 듣는지, 무슨 일이 일어났는지 아는지, 되돌릴 수 있는지, 입력을 잃지 않는지. 백엔드는 도메인 의도입니다: 용어집·스키마 주석·기획서·티켓이 각 엔티티·상태·값에 준 의미를 출처와 함께 적고, 근거가 없는 기대값은 추측하지 않고 질문으로 돌려줍니다. 시험 데이터는 양쪽 모두 도메인에 맞는 실제적인 값을 씁니다.</p>
-    <p data-i18n="all_p"><code>/qa all</code>은 두 팀을 한 번에 띄웁니다. 서브에이전트는 문제와 수정안만 만들고 아무것도 바꾸지 않습니다.</p>
+    <p data-i18n="all_p">그냥 <code>/qa</code>(= <code>/qa all</code>)는 두 팀을 한 번에 띄웁니다. 접속 정보가 없는 쪽은 건너뛰고 보고서에 적습니다. 서브에이전트는 문제와 수정안만 만들고 아무것도 바꾸지 않습니다.</p>
   </section>
 
   <section id="how">
@@ -167,11 +167,11 @@
   <section id="options">
     <h2 data-i18n="opt_h">옵션</h2>
     <div class="card">
-      <div class="solid"><pre>/qa [e2e|data|all] [target] [--agents N] [--model M] [--effort E] [--since REF]</pre></div>
+      <div class="solid"><pre>/qa [all|e2e|data] [target] [--agents N] [--model M] [--effort E] [--since REF]</pre></div>
       <div class="tablewrap"><table>
         <thead><tr><th data-i18n="th_arg">인자</th><th data-i18n="th_def">기본값</th><th data-i18n="th_val">값</th></tr></thead>
         <tbody>
-          <tr><td>mode</td><td><code>e2e</code></td><td><code>e2e</code>/<code>frontend</code> <code>data</code>/<code>backend</code> <code>all</code></td></tr>
+          <tr><td>mode</td><td><code>all</code></td><td><code>all</code> <code>e2e</code>/<code>frontend</code> <code>data</code>/<code>backend</code></td></tr>
           <tr><td>target</td><td data-i18n="def_target">현재 저장소와 dev 환경</td><td data-i18n="val_target">URL, 저장소 경로, 티켓 키, 기능 이름</td></tr>
           <tr><td><code>--agents N</code></td><td><code>5</code></td><td data-i18n="val_agents">모드당 1-10</td></tr>
           <tr><td><code>--model M</code></td><td><code>sonnet</code> (Sonnet 5.5)</td><td data-i18n="val_model">sonnet, opus, haiku, fable 또는 전체 모델 id</td></tr>
@@ -242,7 +242,7 @@ const I18N = {
     data_h: "백엔드 · API와 데이터 분석가", data_p: "최근 변경된 API와 쿼리를 실제 데이터와 도메인 의도에 맞춰 봅니다.",
     d1: "API 응답과 DB 행 대조", d2: "쿼리 논리: 조인, 필터, NULL, 중복", d3: "도메인 무결성: 도메인이 허용하지 않는 상태·조합·값", d4: "집계와 시간: 날짜 경계, 시간대", d5: "변경 전·후 쿼리 결과 비교",
     intent_p: "판정 기준은 팀마다 다릅니다. 프론트는 실제 사용자의 경험입니다: 실수해도 목표에 닿거나 이유를 분명히 듣는지, 무슨 일이 일어났는지 아는지, 되돌릴 수 있는지, 입력을 잃지 않는지. 백엔드는 도메인 의도입니다: 용어집·스키마 주석·기획서·티켓이 각 엔티티·상태·값에 준 의미를 출처와 함께 적고, 근거가 없는 기대값은 추측하지 않고 질문으로 돌려줍니다. 시험 데이터는 양쪽 모두 도메인에 맞는 실제적인 값을 씁니다.",
-    all_p: "<code>/qa all</code>은 두 팀을 한 번에 띄웁니다. 서브에이전트는 문제와 수정안만 만들고 아무것도 바꾸지 않습니다.",
+    all_p: "그냥 <code>/qa</code>(= <code>/qa all</code>)는 두 팀을 한 번에 띄웁니다. 접속 정보가 없는 쪽은 건너뛰고 보고서에 적습니다. 서브에이전트는 문제와 수정안만 만들고 아무것도 바꾸지 않습니다.",
     how_h: "한 번의 실행",
     s1_h: "근거 수집", s1_p: "저장소 지침과 --since 이후 git diff를 읽고, 바뀐 엔드포인트·쿼리·테이블·화면과 도메인 의도 표(엔티티·상태·전이·불변식·역할 규칙, 각각 출처 포함)를 plan.md에 적습니다.",
     s2_h: "영역 나누기", s2_p: "바뀐 경로마다 담당 영역을 정합니다. 영역끼리 계정·데이터·브라우저 세션을 공유하지 않습니다.",
@@ -281,7 +281,7 @@ const I18N = {
     data_h: "Backend · API and data analysts", data_p: "Check the recently changed APIs and queries against real data and domain intent.",
     d1: "API response vs DB rows", d2: "Query logic: joins, filters, NULLs, duplicates", d3: "Domain integrity: states, combinations, and values the domain forbids", d4: "Aggregates and time: date boundaries, time zones", d5: "Before vs after query results",
     intent_p: "Each team has its own oracle. Frontend: the real user's experience. With mistakes included, do they reach the goal or get told clearly why not, understand what happened, recover, and keep their work? Backend: domain intent, the meaning your glossary, schema comments, specs, and tickets give each entity, state, and value, cited at the source; with no written rule, the finding comes back as a question instead of a guess. Test data is domain-realistic on both sides.",
-    all_p: "<code>/qa all</code> launches both teams together. Delegates find and propose; they change nothing.",
+    all_p: "Plain <code>/qa</code> (= <code>/qa all</code>) launches both teams together; a side whose access is missing is skipped and named in the report. Delegates find and propose; they change nothing.",
     how_h: "One run",
     s1_h: "Ground", s1_p: "Read the repo instructions and the git diff since --since; write the changed endpoints, queries, tables, and screens and a domain intent table (entities, states, transitions, invariants, role rules, each with its source) into plan.md.",
     s2_h: "Slice", s2_p: "Every changed path maps to a slice. Slices share no accounts, data, or browser sessions.",
